@@ -15,7 +15,13 @@
         <CitiesInput :items="cities" :selectCity="selectCity" icon="pin" placeholder="Selecione uma cidade" />
         <ButtonComponent label="BUSCAR AGORA" />
     </div>
+  </div>
+  <div>
+    <p v-if="total">total: {{ total }}</p>
 
+    <div v-if="city.name">
+      <p>{{ JSON.stringify(city) }}</p>
+    </div>
   </div>
 </template>
 
