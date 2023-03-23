@@ -1,8 +1,3 @@
-<script setup>
-import SearchInput from './SearchInput.vue';
-import ButtonComponent from './ButtonComponent.vue';
-</script>
-
 <template>
   <div class="main">
     <div class="bg__image bg__image--left">
@@ -16,13 +11,66 @@ import ButtonComponent from './ButtonComponent.vue';
     <h1 class="title">Encontre os <strong>melhores blocos</strong><br /> de carnaval de 2023</h1>
   
     <div class="container__wrapper">
-        <SearchInput icon="search" placeholder="Pesquise por nome"/>
-        <SearchInput icon="pin" placeholder="Selecione uma cidade" />
+        <StatesInput :items="states" :selectState="selectState" icon="search" placeholder="Pesquise por nome"/>
+        <CitiesInput :items="cities" :selectCity="selectCity" icon="pin" placeholder="Selecione uma cidade" />
         <ButtonComponent label="BUSCAR AGORA" />
     </div>
 
   </div>
 </template>
+
+<script>
+import StatesInput from './States.vue';
+import CitiesInput from './Cities.vue';
+import ButtonComponent from './ButtonComponent.vue';
+
+export default {
+  components: { StatesInput, ButtonComponent, CitiesInput },
+  data() {
+    return {
+      selectedState: '',
+      selectedCity: '',
+      states: [],
+      cities: [],
+      total: 0,
+      city: {},
+    }
+  },
+  async mounted() {
+        const { geonames: states } = await (await fetch('http://www.geonames.org/childrenJSON?geonameId=3469034')).json()
+        this.states = states
+  },
+  methods: {
+    async searchCity(value) {
+      if (!value) return;
+
+      const { geonames: cities, totalResultsCount: total } = await (await fetch(`http://www.geonames.org/childrenJSON?geonameId=${value}`)).json()
+      this.cities = cities
+      this.total = total
+    },
+    async getCityInfo(value) {
+      if (!value) return;
+
+      const { geonames: city } = await (await fetch(`http://www.geonames.org/childrenJSON?geonameId=${value}`)).json()
+      this.city = city[0]
+    },
+    selectState(value) {
+      this.selectedState = value
+    },
+    selectCity(value) {
+      this.selectedCity = value
+    }
+  },
+  watch: {
+    selectedState(newValue) {
+      this.searchCity(newValue)
+    },
+    selectedCity(newValue) {
+      this.getCityInfo(newValue)
+    }
+  }
+}
+</script>
 
 <style scoped lang="scss">
 

@@ -1,30 +1,26 @@
 <template>
     <div class="container__input">
-        <component :is="renderIcon"/>
-        <input type="text" :placeholder="placeholder" />
+        <SearchIcon />
+        <select name="states" id="states" @change="$event => selectState($event.target.value)">
+            <option selected>{{ placeholder }}</option>
+            <option v-for="item in items" :key="item.name" :value="item.geonameId">{{ item.name }}</option>
+        </select>
     </div>
 </template>
 
 <script>
 import SearchIcon from './icons/SearchIcon.vue';
-import PinIcon from './icons/PinIcon.vue';
 
 export default {
-    props: ['icon', 'placeholder'],
-    components: {
-        SearchIcon, 
-        PinIcon
+    props: {
+        icon: String, 
+        placeholder: String, 
+        items: Array,
+        selectState: Function
     },
-    computed: {
-        renderIcon: function () {
-            const icons = {
-                pin: PinIcon,
-                search: SearchIcon
-            }
-
-            return icons[this.icon]
-        }
-    }
+    components: {
+        SearchIcon,
+    },
 }
 </script>
 
@@ -45,10 +41,11 @@ export default {
         background: #F4F4FF;
         border-radius: 5px;
 
-        input {
+        input, select, option {
             outline: none;
             border: none;
             background: none;
+            width: 100%;
         }
     }
 }
